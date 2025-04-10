@@ -11,13 +11,13 @@ import jakarta.ws.rs.core.Response.Status;
 import org.apache.commons.codec.digest.DigestUtils;
 
 
-@Path("/login")
+@Path("/users")
 public class LoginResource {
     private final Datastore datastore = DatastoreOptions.getDefaultInstance().getService();
     private final Gson gson = new Gson();
 
     @POST
-    @Path("/")
+    @Path("/login")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     public Response doLogin(LoginData data) {

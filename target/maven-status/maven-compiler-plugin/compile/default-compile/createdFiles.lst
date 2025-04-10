@@ -1,5 +1,5 @@
 com/adc/util/AuthToken.class
 com/adc/resources/LoginResource.class
-com/adc/resources/UserResource.class
+com/adc/resources/RegisterResource.class
 com/adc/util/LoginData.class
 com/adc/entities/User.class
