@@ -1,14 +1,14 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
   
   <modelVersion>4.0.0</modelVersion>
-  <groupId>Firstwebapp</groupId>
-  <artifactId>Firstwebapp</artifactId>
+  <groupId>avaliacaoindadc63405</groupId>
+  <artifactId>avaliacaoindadc</artifactId>
   <version>0.0.1</version>
   
   <packaging>war</packaging>
   
-  <name>FirstWebApplication</name>
-  <description>ADC 2024/2025 Example Application</description>
+  <name>APDC-2025-Individual-63405</name>
+  <description>APDC-2025-Individual-63405</description>
 
   <properties>
 		<appengine.maven.plugin.version>2.8.3</appengine.maven.plugin.version>
