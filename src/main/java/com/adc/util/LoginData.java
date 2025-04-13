@@ -2,7 +2,7 @@ package com.adc.util;
 
 public class LoginData {
 	
-	public String username;
+	public String login;
 	public String password;
 	
 	public LoginData() {
@@ -10,7 +10,7 @@ public class LoginData {
 	}
 	
 	public LoginData(String username, String password) {
-		this.username = username;
+		this.login = username;
 		this.password = password;
 	}
 	
