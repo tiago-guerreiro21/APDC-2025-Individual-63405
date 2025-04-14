@@ -5,7 +5,6 @@ import java.util.UUID;
 public class AuthToken {
     public static final long EXPIRATION_TIME = 1000 * 60 * 60 * 2; // 2 horas
     
-    // Estrutura completa conforme enunciado
     public final String tokenID;
     public final String USER;       // username
     public final String ROLE;       // papel do utilizador
