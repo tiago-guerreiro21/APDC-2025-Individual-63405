@@ -21,10 +21,8 @@ public class LoginResource {
     @Produces(MediaType.APPLICATION_JSON)
     public Response doLogin(LoginData data) {
         try {
-            // 1. Determinar se o login é email ou username
             boolean isEmail = data.login.contains("@");
             
-            // 2. Buscar o utilizador na base de dados
             Entity user = findUser(data.login, isEmail);
             
             if (user == null) {
@@ -32,14 +30,12 @@ public class LoginResource {
                     .entity("{\"error\": \"Credenciais inválidas\"}").build();
             }
 
-            // 3. Validar a palavra-passe
             String hashedPWD = user.getString("password");
             if (!hashedPWD.equals(DigestUtils.sha512Hex(data.password))) {
                 return Response.status(Status.FORBIDDEN)
                     .entity("{\"error\": \"Credenciais inválidas\"}").build();
             }
 
-            // 4. Verificar se a conta está ativada
             String accountState = user.getString("accountState");
             if (!"ATIVADA".equals(accountState)) {
                 return Response.status(Status.FORBIDDEN)
@@ -47,14 +43,11 @@ public class LoginResource {
                     .build();
             }
 
-            // 5. Obter o perfil do utilizador
             String userRole = user.getString("role");
             String username = user.getString("username");
 
-            // 6. Criar token de autenticação
             AuthToken token = new AuthToken(username, userRole);
 
-            // 7. Guardar o token na base de dados
             Key tokenKey = datastore.newKeyFactory().setKind("AuthToken").newKey(token.tokenID);
             Entity tokenEntity = Entity.newBuilder(tokenKey)
                 .set("username", token.USER)
@@ -66,7 +59,6 @@ public class LoginResource {
             
             datastore.put(tokenEntity);
 
-            // 8. Retornar resposta
             String welcomeMessage = generateWelcomeMessage(userRole);
             return Response.ok()
                 .entity("{\"token\": " + gson.toJson(token) + ", \"message\": \"" + welcomeMessage + "\"}")
@@ -83,13 +75,11 @@ public class LoginResource {
         Query<Entity> query;
         
         if (isEmail) {
-            // Buscar por email
             query = Query.newEntityQueryBuilder()
                 .setKind("User")
                 .setFilter(StructuredQuery.PropertyFilter.eq("email", login))
                 .build();
         } else {
-            // Buscar por username (chave primária)
             Key userKey = datastore.newKeyFactory().setKind("User").newKey(login);
             return datastore.get(userKey);
         }
