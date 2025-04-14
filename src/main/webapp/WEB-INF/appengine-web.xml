@@ -1,17 +1,24 @@
 <?xml version="1.0" encoding="utf-8"?>
 <appengine-web-app xmlns="http://appengine.google.com/ns/1.0">
     <application>avaliacaoindadc</application>
-    <version>1</version>
+    <version>v1</version>
+    <runtime>java21</runtime>
     <threadsafe>true</threadsafe>
+    
+    <automatic-scaling>
+        <min-instances>1</min-instances>
+    </automatic-scaling>
+    
+    <env-variables>
+        <env-var name="GOOGLE_CLOUD_PROJECT" value="avaliacaoindadc" />
+    </env-variables>
     
     <system-properties>
         <property name="java.util.logging.config.file" value="WEB-INF/logging.properties"/>
+        <property name="appengine.storage.useDefaultServiceAccount" value="true"/>
     </system-properties>
     
-    <runtime>java21</runtime>
-    <env-variables>
-    </env-variables>
     <static-files>
-    	<include path="/**" />
-	</static-files>
+        <include path="/**"/>
+    </static-files>
 </appengine-web-app>
