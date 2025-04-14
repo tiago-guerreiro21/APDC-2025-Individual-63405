@@ -193,17 +193,14 @@ public class UserResources {
         @QueryParam("newRole") String newRole) {
 
         try {
-            // Verificar token e role (ADMIN ou BACKOFFICE)
             Entity tokenEntity = validateTokenAndRole(token, ROLE_ADMIN, ROLE_BACKOFFICE);
             String requesterRole = tokenEntity.getString("role");
 
-            // Validação do novo role
             if (!VALID_ROLES.contains(newRole)) {
                 return Response.status(Status.BAD_REQUEST)
                     .entity("{\"error\": \"Perfil inválido. Valores permitidos: " + VALID_ROLES + "\"}").build();
             }
 
-            // Verificar utilizador alvo
             Key targetKey = datastore.newKeyFactory().setKind("User").newKey(targetUsername);
             Entity targetUser = datastore.get(targetKey);
             if (targetUser == null) {
@@ -213,9 +210,7 @@ public class UserResources {
 
             String currentRole = targetUser.getString(PROP_ROLE);
             
-            // Verificar regras de mudança de role conforme enunciado
             if (ROLE_BACKOFFICE.equals(requesterRole)) {
-                // BACKOFFICE só pode mudar ENDUSER <-> PARTNER
                 if (!((ROLE_ENDUSER.equals(currentRole) && ROLE_PARTNER.equals(newRole)) || 
                      (ROLE_PARTNER.equals(currentRole) && ROLE_ENDUSER.equals(newRole)))) {
                     return Response.status(Status.FORBIDDEN)
@@ -223,9 +218,7 @@ public class UserResources {
                 }
             }
 
-            // ADMIN pode fazer qualquer mudança, então não precisa de verificação adicional
 
-            // Atualizar role
             Entity updatedUser = Entity.newBuilder(targetUser)
                 .set(PROP_ROLE, newRole)
                 .build();
@@ -376,7 +369,6 @@ public class UserResources {
                 String accountState = user.getString(PROP_ACCOUNT_STATE);
                 String profile = user.getString(PROP_PROFILE);
 
-                // Verificar se o usuário deve ser incluído
                 if (requesterRole.equals(ROLE_ADMIN) || 
                     (requesterRole.equals(ROLE_BACKOFFICE) && userRole.equals(ROLE_ENDUSER)) ||
                     (requesterRole.equals(ROLE_ENDUSER) && userRole.equals(ROLE_ENDUSER) && 
@@ -384,11 +376,9 @@ public class UserResources {
 
                     Map<String, String> userData = new HashMap<>();
 
-                    // Campos básicos para todos
                     userData.put("username", user.getString(PROP_USERNAME));
                     userData.put("email", user.getString(PROP_EMAIL));
 
-                    // Se for ADMIN ou BACKOFFICE, adiciona todos os campos
                     if (requesterRole.equals(ROLE_ADMIN) || requesterRole.equals(ROLE_BACKOFFICE)) {
                         userData.put("fullName", getValueOrNotDefined(user, PROP_FULLNAME));
                         userData.put("phone", getValueOrNotDefined(user, PROP_PHONE));
@@ -414,7 +404,7 @@ public class UserResources {
 
         } catch (Exception e) {
             return Response.serverError()
-                .entity("{\"error\": \"Erro ao listar usuários: " + e.getMessage() + "\"}")
+                .entity("{\"error\": \"Erro ao listar utilizadores: " + e.getMessage() + "\"}")
                 .build();
         }
     }
@@ -458,7 +448,7 @@ public class UserResources {
 
                 if (!targetUser.getString(PROP_USERNAME).equals(targetUsername)) {
                     return Response.status(Status.FORBIDDEN)
-                        .entity("{\"error\": \"Só pode modificar sua própria conta\"}").build();
+                        .entity("{\"error\": \"Só pode modificar a sua própria conta\"}").build();
                 }
                 attributes.keySet().removeAll(Arrays.asList(PROP_USERNAME, PROP_EMAIL, PROP_FULLNAME, PROP_ROLE, PROP_ACCOUNT_STATE));
             } 
@@ -518,17 +508,17 @@ public class UserResources {
             String storedHash = user.getString(PROP_PASSWORD);
             if (!storedHash.equals(DigestUtils.sha512Hex(currentPassword))) {
                 return Response.status(Status.UNAUTHORIZED)
-                    .entity("{\"error\": \"Senha atual incorreta\"}").build();
+                    .entity("{\"error\": \"Password atual incorreta\"}").build();
             }
 
             if (!newPassword.equals(confirmPassword)) {
                 return Response.status(Status.BAD_REQUEST)
-                    .entity("{\"error\": \"As senhas não coincidem\"}").build();
+                    .entity("{\"error\": \"As passwords não coincidem\"}").build();
             }
 
             if (!PASSWORD_PATTERN.matcher(newPassword).matches()) {
                 return Response.status(Status.BAD_REQUEST)
-                    .entity("{\"error\": \"Nova senha não cumpre requisitos\"}").build();
+                    .entity("{\"error\": \"Nova password não cumpre requisitos\"}").build();
             }
 
             Entity updatedUser = Entity.newBuilder(user)
@@ -539,13 +529,13 @@ public class UserResources {
             try {
                 txn.update(updatedUser);
                 txn.commit();
-                return Response.ok("{\"message\": \"Senha alterada com sucesso\"}").build();
+                return Response.ok("{\"message\": \"Password alterada com sucesso\"}").build();
             } finally {
                 if (txn.isActive()) txn.rollback();
             }
         } catch (Exception e) {
             return Response.serverError()
-                .entity("{\"error\": \"Falha ao alterar senha: " + e.getMessage() + "\"}").build();
+                .entity("{\"error\": \"Falha ao alterar password: " + e.getMessage() + "\"}").build();
         }
     }
     
@@ -586,6 +576,8 @@ public class UserResources {
         }
     }    
    
+    
+    
     @PostConstruct
     public void initRootUser() {
         Transaction txn = datastore.newTransaction();
